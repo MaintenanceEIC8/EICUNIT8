@@ -14,7 +14,7 @@ uses **Firebase Authentication** (email/password).
 |---|---|---|
 | 1 | `shared.js` core (`pm_records` CRUD, access gate, report workflow, signatures) + `history.html` | **done** |
 | 2 | `outage-*.html`, `material-warehouse.html`, `checksheet-temperature.html`, `checksheet-level-switch.html`, `device-admin.html` | **done** |
-| 3 | `trend/` system (`js/supabase-adapter.js` → Firestore adapter) | pending |
+| 3 | `trend/` system (`js/supabase-adapter.js` → `js/historical-adapter.js`, Firestore) | **done** |
 
 ### Phase 2 approach
 
@@ -41,6 +41,32 @@ one-line delegate to `pmRest`.
 
 New composite indexes in `firestore.indexes.json`: `outage_assets`
 (`input_category` + `asset_tag`) and (`input_category` + `created_at`).
+
+### Phase 3 approach (`trend/`)
+
+`js/supabase-adapter.js` was replaced by **`js/historical-adapter.js`** — same
+public object (still exposed as `window.SupabaseAdapter`, plus alias
+`window.HistoricalAdapter`, so `historical-manager.js` and `js/adapters/*` are
+untouched). It reads the `pm_records` collection straight from Firestore.
+
+- `trend_so2.html` / `trend_fegt.html` / `trend_cems.html` now load the Firebase
+  compat SDK + `../firebase-config.js` before the config scripts.
+- `config/system-config.js`: the `SUPABASE` block became `HISTORICAL_SOURCE`
+  (`{ PROJECT, COLLECTION, FETCH_LIMIT }`) — the Supabase URL and anon key are gone.
+- `fetchByModulAndRange()` filters by a **prefix** query on `modul`
+  (`modul >= key && modul < key + ''`) instead of PostgREST `ilike.*key*` —
+  works because each form stores `modul` prefixed with its key (`SO2 Scrubber
+  Inlet`, `FEGT & Leak Detection`, `CEMS Calibration`). Single-field range, no
+  composite index needed. Time-range filtering stays client-side (unchanged).
+- `data` is a JSON string in Firestore → parsed back to an object in `docToRec()`
+  (same as `pmDocToRec` in `shared.js`), so `so2-adapter`/`cems-adapter` (which
+  read `r.data.analyzer` / `r.data.zero`) work unchanged.
+- `fegt-adapter`'s `selectColumns: 'paths:data->paths,leakPaths:data->leakPaths'`
+  PostgREST projection is emulated client-side: the adapter parses that syntax,
+  flattens `data.paths`/`data.leakPaths` onto `r.paths`/`r.leakPaths`, and drops
+  the heavy `r.data`. Firestore still downloads the whole doc first (it can't
+  project a sub-field of a string), but the prefix query keeps that to only FEGT
+  records.
 
 ## Firestore data model (Phase 1)
 

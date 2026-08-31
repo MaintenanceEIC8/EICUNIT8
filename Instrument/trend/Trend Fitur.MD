@@ -102,11 +102,12 @@ trend/
 │   ├── style.css        (layout & struktur)
 │   └── dcs-theme.css     (warna & tema dark industrial)
 ├── config/
-│   ├── system-config.js  (Supabase, quick range, flags LIVE/HISTORICAL)
+│   ├── system-config.js  (HISTORICAL_SOURCE Firestore, quick range, flags LIVE/HISTORICAL)
 │   └── default-tags.js   (definisi tag SO2 A & B)
 └── js/
     ├── storage-manager.js       (wrapper localStorage aman)
-    ├── supabase-adapter.js      (fetch pm_records, read-only)
+    ├── historical-adapter.js    (fetch pm_records dari Firestore eic8-3d7f1, read-only;
+    │                             dulu supabase-adapter.js — lihat FIREBASE_MIGRATION.md Phase 3)
     ├── so2-adapter.js           (parser record SO2 → time series)
     ├── tag-manager.js           (registry tag)
     ├── historical-manager.js    (quick range, custom range, load orchestration)

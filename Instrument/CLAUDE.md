@@ -2,7 +2,8 @@
 
 Repo ini berisi suite file HTML untuk OMS (Outage Management System) PLTU Paiton Unit 7:
 form maintenance/kalibrasi/inspeksi, masing-masing satu file HTML mandiri (vanilla JS,
-Supabase sebagai backend, jsPDF untuk export PDF).
+**Firebase/Firestore project `eic8-3d7f1`** sebagai backend, jsPDF untuk export PDF).
+Dulu Supabase — sudah dimigrasikan penuh, termasuk `trend/` (lihat `FIREBASE_MIGRATION.md`).
 
 ## Wajib dilakukan sebelum push ke GitHub
 
@@ -24,8 +25,13 @@ Supabase sebagai backend, jsPDF untuk export PDF).
 
 ## Konvensi teknis proyek (ringkas)
 
-- Backend: Supabase (`ruvvximnnacpvvoogbzs.supabase.co`), tabel `outage_records` /
-  `outage_assets`.
+- Backend: Firebase/Firestore project `eic8-3d7f1` (`firebase-config.js`, sama dengan
+  departemen Electric). Collection utama `pm_records`; juga `outage_records` /
+  `outage_assets`, `ts_checksheet`, `material_*`, `trusted_devices`, `gate_config`.
+  `shared.js` punya `pmRest(method, path, body)` — penerjemah subset PostgREST → Firestore
+  untuk halaman yang dulu punya `supaFetch` sendiri. Trend (`trend/`) baca `pm_records`
+  lewat `trend/js/historical-adapter.js`. Supabase sudah tidak dipakai sama sekali
+  (folder `sql/` + skrip `cleanup_workgroup.py` tinggal artefak historis).
 - `shared.js` — dependency bersama: database, kompresi gambar, overlay anotasi, autosave.
 - Export PDF pakai jsPDF + jspdf-autotable, dengan pola standar `drawBg` / `willDrawPage`
   untuk background/header/footer tiap halaman. Saat pakai `autoTable`, selalu set

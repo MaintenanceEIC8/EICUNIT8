@@ -118,13 +118,18 @@
      .js/.css dari GitHub Pages cukup lama, jadi fix baru kadang belum
      kepakai walau file di repo sudah ter-update. Naikkan angka ini tiap
      kali ada perubahan berarti di file-file di bawah / css/*.css. -->
-<script src="config/system-config.js?v=20260827a"></script>
+<!-- Firebase (Firestore) — sumber data historical, project eic8-3d7f1 -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="../firebase-config.js"></script>
+
+<script src="config/system-config.js?v=20260831a"></script>
 <script src="config/default-tags-so2.js?v=20260827a"></script>
 <script src="config/modules/so2.config.js?v=20260827a"></script>
 
 <!-- ===================== CORE MODULES ================ -->
 <script src="js/storage-manager.js?v=20260827a"></script>
-<script src="js/supabase-adapter.js?v=20260827c"></script>
+<script src="js/historical-adapter.js?v=20260831a"></script>
 <script src="js/adapters/so2-adapter.js?v=20260827a"></script>
 <script src="js/tag-manager.js?v=20260827a"></script>
 <script src="js/historical-manager.js?v=20260827a"></script>
@@ -133,7 +138,7 @@
 <script src="js/export-manager.js?v=20260827a"></script>
 <script src="js/live-trend-engine.js?v=20260827a"></script>
 <script src="js/simulator.js?v=20260827a"></script>
-<script src="js/ui-manager.js?v=20260827a"></script>
+<script src="js/ui-manager.js?v=20260831a"></script>
 <script src="js/module-view.js?v=20260827a"></script>
 <script src="js/app.js?v=20260827a"></script>
 

@@ -12,22 +12,23 @@ window.DCS_CONFIG = {
   APP_VERSION: '0.1.0-phase1',
 
   /* ------------------------------------------------------------------
-   * DATA SOURCE — SUPABASE (dipakai untuk HISTORICAL TREND)
-   * Sengaja pakai project + anon key yang SAMA dengan repo PM-UNIT-7
-   * (Mahfudjtf/PM-UNIT-7 -> shared.js) supaya trend menampilkan data
-   * PM/kalibrasi yang REAL, bukan dummy. Anon key ini read-only by
-   * design (RLS di sisi Supabase), aman dipakai di client-side.
+   * DATA SOURCE — FIRESTORE (dipakai untuk HISTORICAL TREND)
+   * Trend membaca collection `pm_records` LANGSUNG dari Firestore project
+   * eic8-3d7f1 — project yang sama dipakai seluruh check sheet Instrument
+   * (lihat ../firebase-config.js). Dulu Supabase (project
+   * ruvvximnnacpvvoogbzs), sudah dimigrasikan penuh: lihat
+   * js/historical-adapter.js.
    * ------------------------------------------------------------------ */
-  SUPABASE: {
-    URL: 'https://ruvvximnnacpvvoogbzs.supabase.co',
-    ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ1dnZ4aW1ubmFjcHZ2b29nYnpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNDE1NDAsImV4cCI6MjA5NDYxNzU0MH0.GRu5n0Jl2fP0V8L_QLN2Tkmd0Aw0JbMRu25I7t-R7l8',
-    TABLE: 'pm_records',
-    // Kolom yang diminta saat fetch daftar record historical. "data" WAJIB
-    // di-select karena nilai kalibrasi (aDCS/aLocal/dst) ada di dalamnya.
+  HISTORICAL_SOURCE: {
+    PROJECT: 'eic8-3d7f1',
+    COLLECTION: 'pm_records',
+    // Kolom yang dulu diminta saat fetch (referensi historis — Firestore
+    // selalu mengembalikan dokumen penuh; `data` disimpan sebagai string
+    // JSON lalu di-parse di historical-adapter.js).
     SELECT_COLUMNS: 'id,modul,tanggal,pic,work_order,unit,data,created_at,updated_at',
-    // Dinaikkan dari 500 -> 3000: sekarang rentang waktu bisa sampai 3 Tahun
-    // (lihat QUICK_RANGES), jadi butuh headroom lebih supaya modul dengan
-    // banyak record tidak diam-diam kepotong di limit lama.
+    // Batas dokumen per modul per fetch. Query sudah difilter prefix `modul`
+    // di server, jadi ini cuma jaring pengaman — record PM sifatnya
+    // event-based (jarang), praktis tak pernah mentok.
     FETCH_LIMIT: 3000
   },
 
@@ -35,7 +36,7 @@ window.DCS_CONFIG = {
    * MODE OPERASI DATA
    * live   : LiveTrendEngine + Simulator (lihat js/simulator.js) — DISABLED
    *          di Phase ini sesuai arahan: prioritas HISTORICAL dulu.
-   * historical : SupabaseAdapter (read-only) dari pm_records — ACTIVE.
+   * historical : HistoricalAdapter (read-only) dari Firestore pm_records — ACTIVE.
    * ------------------------------------------------------------------ */
   LIVE_TREND_ENABLED: false,
   HISTORICAL_TREND_ENABLED: true,

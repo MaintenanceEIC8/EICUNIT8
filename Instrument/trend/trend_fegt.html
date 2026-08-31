@@ -159,14 +159,19 @@
      walau file di repo sudah ter-update. Naikkan angka ini tiap kali ada
      perubahan berarti di file-file di bawah supaya browser paksa ambil
      ulang versi terbaru. -->
-<script src="config/system-config.js?v=20260827a"></script>
+<!-- Firebase (Firestore) — sumber data historical, project eic8-3d7f1 -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="../firebase-config.js"></script>
+
+<script src="config/system-config.js?v=20260831a"></script>
 <script src="config/default-tags-fegt.js?v=20260827b"></script>
 <script src="config/modules/fegt.config.js?v=20260827a"></script>
 <script src="config/modules/ld.config.js?v=20260827a"></script>
 
 <!-- ===================== CORE MODULES ================ -->
 <script src="js/storage-manager.js?v=20260827a"></script>
-<script src="js/supabase-adapter.js?v=20260827c"></script>
+<script src="js/historical-adapter.js?v=20260831a"></script>
 <script src="js/adapters/fegt-adapter.js?v=20260827a"></script>
 <script src="js/tag-manager.js?v=20260827a"></script>
 <script src="js/historical-manager.js?v=20260827a"></script>
@@ -175,7 +180,7 @@
 <script src="js/export-manager.js?v=20260827a"></script>
 <script src="js/live-trend-engine.js?v=20260827a"></script>
 <script src="js/simulator.js?v=20260827a"></script>
-<script src="js/ui-manager.js?v=20260827a"></script>
+<script src="js/ui-manager.js?v=20260831a"></script>
 <script src="js/module-view.js?v=20260827a"></script>
 <script src="js/app.js?v=20260827a"></script>
 

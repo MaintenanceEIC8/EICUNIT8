@@ -243,7 +243,7 @@
     els.statusBar.innerHTML =
       '<span>SYSTEM: RUNNING</span>' +
       '<span>MODE: HISTORICAL</span>' +
-      '<span>DATA SOURCE: SUPABASE (pm_records, read-only)</span>' +
+      '<span>DATA SOURCE: FIRESTORE (pm_records, read-only)</span>' +
       '<span class="status-conn">CONNECTION: <span class="dot dot-ok"></span> READY</span>' +
       '<span>TOTAL TAGS: ' + tags.length + '</span>' +
       '<span>ACTIVE TRENDS: ' + activeTrends + '</span>' +
