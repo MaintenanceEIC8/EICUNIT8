@@ -525,7 +525,7 @@
 
   <div class="card">
     <h2>Data Sumber</h2>
-    <div class="meta-line">Data awal sheet ini diisi otomatis dari PDF <b>Plan weekly planning EIC-7</b> — silakan cek &amp; sesuaikan tiap baris. Import Excel/JSON akan menggantikan data yang tampil.</div>
+    <div class="meta-line">Sheet ini mulai kosong. Klik <b>Import Excel WO</b> atau <b>Lanjutkan dari file .json sebelumnya</b> untuk memuat data, atau <b>Ambil Update Terbaru</b> untuk menarik data dari cloud.</div>
     <div class="toolbar">
       <span class="file-btn btn">Import Excel WO (.xlsx)<input type="file" id="xlsxInputJa" accept=".xlsx,.xls"></span>
       <span class="file-btn btn secondary">Lanjutkan dari file .json sebelumnya<input type="file" id="jsonInputJa" accept=".json"></span>
@@ -2032,7 +2032,7 @@ function initSheet(key, suffix, seedData){
 }
 
 initSheet('report', '', null);
-initSheet('ja', 'Ja', JA_SEED_DATA);
+initSheet('ja', 'Ja', null);  // sheet mulai kosong — JA_SEED_DATA tidak lagi dipakai
 reconcileCrossSync();
 
 // ── Update ke Cloud / Ambil Update Terbaru — berlaku untuk KEDUA sheet sekaligus ──
