@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Dashboard Reporting — EIC8 Check Sheet Digital Portal</title>
+<script src="portal-gate.js"></script>
+<style>
+  :root {
+    --bg: #f8fafb;
+    --bg2: #ffffff;
+    --border: #e5e7eb;
+    --text-dark: #1f2937;
+    --text-mid: #4b5563;
+    --text-light: #9ca3af;
+    --report: #16a34a;
+    --weekly: #217346;
+    --unified: #2563eb;
+    --approval: #d97706;
+    --riwayat: #7c3aed;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-lg: 0 16px 32px rgba(0,0,0,0.12);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  [hidden] { display: none !important; }
+  body {
+    background: var(--bg);
+    color: var(--text-dark);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    min-height: 100vh;
+    line-height: 1.5;
+  }
+  header {
+    position: sticky; top: 0; z-index: 20;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+    box-shadow: var(--shadow-sm);
+    border-top: 4px solid var(--report);
+  }
+  .header-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 16px; padding: 16px clamp(16px, 4vw, 40px);
+  }
+  .logo-block { display: flex; align-items: center; gap: 14px; }
+  .logo-block img { height: 38px; width: auto; border-radius: 6px; }
+  .logo-text .company { font-size: 11px; color: var(--text-light); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+  .logo-text .system { font-size: 18px; font-weight: 700; color: var(--text-dark); letter-spacing: -0.3px; }
+  .back-link { font-size: 13px; font-weight: 600; color: var(--text-mid); text-decoration: none; padding: 7px 14px; border-radius: 8px; border: 1px solid var(--border); white-space: nowrap; }
+  .back-link:hover { border-color: var(--report); color: var(--report); }
+
+  main { max-width: 1100px; margin: 0 auto; padding: 40px clamp(16px, 4vw, 40px) 60px; }
+  .intro { text-align: center; margin-bottom: 36px; }
+  .intro h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.3px; }
+  .intro p { font-size: 13.5px; color: var(--text-light); margin-top: 6px; }
+
+  .hub-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+  }
+  .hub-card {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 18px;
+    padding: 26px 24px; text-decoration: none; color: inherit;
+    display: flex; flex-direction: column; gap: 10px; position: relative; overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    border-top: 4px solid var(--accent, var(--border));
+  }
+  .hub-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--accent); }
+  .hub-icon { font-size: 30px; line-height: 1; }
+  .hub-title { font-size: 16px; font-weight: 800; }
+  .hub-desc { font-size: 12.5px; color: var(--text-mid); flex: 1; }
+  .hub-go { margin-top: auto; font-size: 12px; font-weight: 700; color: var(--accent); }
+
+  footer { text-align: center; padding: 28px 16px 40px; color: var(--text-light); font-size: 12px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo-block">
+      <img src="Electric/LOGO POMI.png" alt="POMI">
+      <div class="logo-text">
+        <div class="company">POMI &middot; PLTU Paiton</div>
+        <div class="system">Dashboard Reporting</div>
+      </div>
+    </div>
+    <a class="back-link" href="index.html">&larr; Dashboard Home</a>
+  </div>
+</header>
+
+<main>
+  <div class="intro">
+    <h2>Dashboard Reporting</h2>
+    <p>Laporan, rekap KPI &amp; alur review/approval</p>
+  </div>
+
+  <div class="hub-grid">
+    <a class="hub-card" style="--accent:var(--weekly)" href="Electric/Weekly%20Report%20Dashboard%20EIC8.html">
+      <span class="hub-icon">📊</span>
+      <span class="hub-title">Weekly Report Dashboard</span>
+      <span class="hub-desc">Input laporan mingguan EIC8 — rekap KPI, work order, manpower &amp; material, export Excel/PDF.</span>
+      <span class="hub-go">Buka →</span>
+    </a>
+    <a class="hub-card" style="--accent:var(--riwayat)" href="Electric/Weekly%20Report%20Dashboard%20EIC8%20-%20View%20Only.html">
+      <span class="hub-icon">👁</span>
+      <span class="hub-title">Weekly Report — View Only</span>
+      <span class="hub-desc">Snapshot read-only untuk dibagikan ke tim. Rekap KPI, progress &amp; pie chart per work group. Tidak bisa diedit.</span>
+      <span class="hub-go">Buka →</span>
+    </a>
+    <a class="hub-card" style="--accent:var(--unified)" href="dashboard.html">
+      <span class="hub-icon">📈</span>
+      <span class="hub-title">Unified Dashboard</span>
+      <span class="hub-desc">Analitik semua submission check sheet (Electric &amp; Instrument) dari Firestore — KPI, aktivitas, trend parameter.</span>
+      <span class="hub-go">Buka →</span>
+    </a>
+    <a class="hub-card" style="--accent:var(--approval)" href="Electric/Review_Approval_Dashboard.html">
+      <span class="hub-icon">✅</span>
+      <span class="hub-title">Review &amp; Approval Electric</span>
+      <span class="hub-desc">Alur sign-off TechOp2 → Supervisor untuk setiap submission check sheet, sampai PDF final bertanda tangan.</span>
+      <span class="hub-go">Buka →</span>
+    </a>
+    <a class="hub-card" style="--accent:var(--report)" href="Instrument/history.html">
+      <span class="hub-icon">📋</span>
+      <span class="hub-title">Riwayat Instrument</span>
+      <span class="hub-desc">Riwayat pengisian check sheet departemen Instrument dari database.</span>
+      <span class="hub-go">Buka →</span>
+    </a>
+  </div>
+</main>
+
+<footer>EIC8 Check Sheet Digital &middot; PLTU Paiton Unit 8</footer>
+
+</body>
+</html>
