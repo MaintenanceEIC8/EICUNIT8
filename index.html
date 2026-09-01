@@ -216,7 +216,10 @@ const portal = document.getElementById('portal');
 
 function unlock() {
   gate.hidden = true;
+  gate.style.display = 'none';   // belt-and-suspenders: beat any cached CSS
   portal.hidden = false;
+  portal.style.display = '';
+  window.scrollTo(0, 0);
 }
 
 if (safeGet(UNLOCK_KEY) === '1') {
