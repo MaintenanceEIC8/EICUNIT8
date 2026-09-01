@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Check Sheet — EIC8 Check Sheet Digital Portal</title>
+<script src="portal-gate.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="Electric/firebase-config.js"></script>
+<style>
+  :root {
+    --bg: #f8fafb;
+    --bg2: #ffffff;
+    --bg3: #f3f4f6;
+    --border: #e5e7eb;
+    --text-dark: #1f2937;
+    --text-mid: #4b5563;
+    --text-light: #9ca3af;
+    --electric: #d97706;
+    --electric-2: #f59e0b;
+    --instrument: #2563eb;
+    --instrument-2: #06b6d4;
+    --ok: #16a34a;
+    --soon: #9ca3af;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 10px rgba(0,0,0,0.06);
+    --shadow-lg: 0 16px 32px rgba(0,0,0,0.12);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text-dark);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    min-height: 100vh;
+    line-height: 1.5;
+  }
+  header {
+    position: sticky; top: 0; z-index: 20;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+    box-shadow: var(--shadow-sm);
+    border-top: 4px solid var(--dept-color, var(--instrument));
+  }
+  .header-inner {
+    max-width: 1320px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 16px clamp(16px, 4vw, 40px);
+  }
+  .logo-block { display: flex; align-items: center; gap: 14px; }
+  .logo-block img { height: 38px; width: auto; border-radius: 6px; }
+  .logo-text .company { font-size: 11px; color: var(--text-light); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+  .logo-text .system { font-size: 18px; font-weight: 700; color: var(--text-dark); letter-spacing: -0.3px; }
+  .back-link { font-size: 13px; font-weight: 600; color: var(--text-mid); text-decoration: none; padding: 7px 14px; border-radius: 8px; border: 1px solid var(--border); white-space: nowrap; }
+  .back-link:hover { border-color: var(--dept-color, var(--instrument)); color: var(--dept-color, var(--instrument)); }
+
+  main { max-width: 1320px; margin: 0 auto; padding: 26px clamp(16px, 4vw, 40px) 60px; }
+
+  .dept-heading { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 800; margin-bottom: 16px; }
+  .dept-heading .swap { font-size: 12px; font-weight: 700; text-decoration: none; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border); color: var(--text-mid); }
+  .dept-heading .swap:hover { border-color: var(--dept-color); color: var(--dept-color); }
+
+  .controls {
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 14px;
+    padding: 14px 16px; margin-bottom: 22px; box-shadow: var(--shadow-sm);
+  }
+  #search {
+    flex: 1 1 240px; padding: 10px 14px; border-radius: 9px; border: 1px solid var(--border);
+    font-size: 14px; background: var(--bg);
+  }
+  #search:focus { outline: none; border-color: var(--dept-color, var(--instrument)); }
+  #statusFilter { padding: 9px 12px; border-radius: 9px; border: 1px solid var(--border); background: var(--bg); font-size: 13px; color: var(--text-mid); }
+  .result-count { font-size: 12px; color: var(--text-light); white-space: nowrap; }
+
+  .migration-note {
+    font-size: 12.5px; color: #92400e; background: #fffbeb; border: 1px solid #fde68a;
+    border-radius: 10px; padding: 10px 14px; margin-bottom: 20px; display: none;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 14px;
+    padding: 18px; box-shadow: var(--shadow-sm); text-decoration: none; color: inherit;
+    display: flex; flex-direction: column; gap: 8px; position: relative;
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    border-top: 3px solid var(--card-color, var(--border));
+  }
+  .card.clickable:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+  .card.disabled { opacity: 0.55; cursor: not-allowed; }
+  .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+  .card-dept {
+    font-size: 10.5px; font-weight: 800; letter-spacing: 0.4px; padding: 3px 8px; border-radius: 999px;
+  }
+  .card-dept.electric { background: #fef3c7; color: #92400e; }
+  .card-dept.instrument { background: #dbeafe; color: #1e40af; }
+  .card-status { font-size: 10.5px; font-weight: 700; padding: 3px 8px; border-radius: 999px; }
+  .card-status.ready { background: #dcfce7; color: #166534; }
+  .card-status.soon { background: #f3f4f6; color: #6b7280; }
+  .card-status.restricted { background: #fee2e2; color: #991b1b; }
+  .card-title { font-size: 15px; font-weight: 700; line-height: 1.3; }
+  .card-tag { font-size: 11.5px; color: var(--text-light); font-family: 'Consolas', monospace; }
+  .card-desc { font-size: 12.5px; color: var(--text-mid); flex: 1; }
+  .card-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; font-size: 11px; color: var(--text-light); border-top: 1px dashed var(--border); padding-top: 8px; }
+  .card-freq { font-weight: 700; }
+  .card-last { font-style: italic; }
+  .no-results { text-align: center; padding: 60px 20px; color: var(--text-light); }
+
+  footer { text-align: center; padding: 20px 16px 36px; color: var(--text-light); font-size: 12px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo-block">
+      <img src="Electric/LOGO POMI.png" alt="POMI">
+      <div class="logo-text">
+        <div class="company">POMI &middot; PLTU Paiton</div>
+        <div class="system" id="systemTitle">EIC8 Check Sheet Digital Portal</div>
+      </div>
+    </div>
+    <a class="back-link" href="index.html">← Dashboard Home</a>
+  </div>
+</header>
+
+<main>
+  <div class="dept-heading">
+    <span id="deptHeading">Check Sheet</span>
+    <a class="swap" id="deptSwap" href="#">↔ Ganti departemen</a>
+  </div>
+
+  <div class="controls">
+    <input type="text" id="search" placeholder="🔎 Cari nama, tag aset, atau kata kunci...">
+    <select id="statusFilter">
+      <option value="all">Semua Status</option>
+      <option value="ready">Aktif</option>
+      <option value="soon">Segera Hadir</option>
+    </select>
+    <span class="result-count" id="resultCount"></span>
+  </div>
+
+  <div class="migration-note" id="migrationNote">
+    ⚠️ Check sheet Instrument sedang dalam proses migrasi dari Supabase ke Firebase — info "Terakhir diisi" untuk modul Instrument akan muncul otomatis setelah migrasi selesai.
+  </div>
+
+  <div class="grid" id="grid"></div>
+  <div class="no-results" id="noResults" style="display:none">Tidak ada check sheet yang cocok dengan pencarian.</div>
+</main>
+
+<footer>EIC8 Check Sheet Digital &middot; PLTU Paiton Unit 8</footer>
+
+<script>
+const DATA = [
+  // ───────── ELECTRIC ─────────
+  {dept:'electric', cat:'dc', tag:'8EB-BYC-125 A/B', name:'Battery Charger 125 A/B', freq:'2 YEARLY', status:'ready', href:'Electric/PM_CheckSheet_BYC125.html', desc:'Rectifier, SCR/IGBT, transformer, cooling fan, float/equalize voltage check.'},
+  {dept:'electric', cat:'dc', tag:'8EB-BYC-125 C/D', name:'Battery Charger 125 C/D', freq:'2 YEARLY', status:'soon', href:'#', desc:'Rectifier, SCR/IGBT, transformer, cooling fan, float/equalize voltage check.'},
+  {dept:'electric', cat:'dc', tag:'8EB-DCDB-125', name:'DC Distribution Board 125V', freq:'YEARLY', status:'soon', href:'#', desc:'Bus voltage, breaker condition, connection torque, busbar temp IR scan.'},
+  {dept:'electric', cat:'dc', tag:'8EB-BY-125 / 250', name:'Battery Bank 125/250 VDC', freq:'PERIODIC', status:'ready', href:'Electric/Battery_8EB-BY-125-250.html', desc:'NiCd cell voltage, electrolyte level, cleaning. BY-250 (200 cells) · BY-125 (92 cells).'},
+  {dept:'electric', cat:'tx', tag:'8EX-XFMR-AT + DGA', name:'Unit Transformer — AT + DGA', freq:'WEEKLY', status:'ready', href:'Electric/Transformer_AT_DGA_Weekly.html', desc:'Oil/winding temp, voltage, DGA current, leak, silicagel, cooling, bushing, OLTC, N₂.'},
+  {dept:'electric', cat:'tx', tag:'8EX-XFMR-AT', name:'Unit Transformer — AT (No DGA)', freq:'WEEKLY', status:'ready', href:'Electric/Transformer_AT_NoDGA_Weekly.html', desc:'Same transformers without DGA test points; silicagel tracked via % pink indicator.'},
+  {dept:'electric', cat:'tx', tag:'U78-USST', name:'USST Transformer — 3 Monthly PM', freq:'3 MONTHLY', status:'ready', href:'Electric/Transformer_USST_3Monthly.html', desc:'Winding temp L/C/R, HV voltage/current, apparent power, cooling fan, component check.'},
+  {dept:'electric', cat:'tx', tag:'SST-SWRO/SCRUB/ADMIN', name:'Common SST — SWRO/Scrubber/Admin', freq:'3 MONTHLY', status:'ready', href:'Electric/Transformer_SST_SWRO_3Monthly.html', desc:'Covers SWRO, Scrubber & Admin transformers. Winding temp, HV voltage/current, cooling fan.'},
+  {dept:'electric', cat:'tx', tag:'SST-CHCB/WH/CUCB', name:'Common SST — CHCB/Warehouse/CUCB', freq:'3 MONTHLY', status:'ready', href:'Electric/Transformer_SST_CHCB_3Monthly.html', desc:'Covers CHCB, Warehouse & CUCB transformers. Winding temp, HV voltage/current, cooling fan.'},
+  {dept:'electric', cat:'tx', tag:'GIS-SF6', name:'GIS SF₆ Gas Pressure Monitoring', freq:'WEEKLY', status:'ready', href:'Electric/Transformer_GIS_SF6.html', desc:'150kV & 500kV switchgear SF₆ gas pressure monitoring — alarm ≥0.45 MPa, trip ≤0.40 MPa.'},
+  {dept:'electric', cat:'tx', tag:'DRY TRANSFORMER PM', name:'Dry Transformer USST', freq:'2 YEARLY', status:'ready', href:'Electric/DRY_TRAFO_PM.html', desc:'2 yearly PM for dry-type USST transformer — winding, insulation & thermal check.'},
+  {dept:'electric', cat:'sg', tag:'8EP-LC-B4', name:'Load Center B4 — Switchgear', freq:'PERIODIC', status:'ready', href:'Electric/8EPLCB4_Maintenance.html', desc:'6 compartments. Cubicle & breaker check, MicroVersa Trip test, trip settings, photos.'},
+  {dept:'electric', cat:'sg', tag:'8EP-MCC', name:'MCC — Switchboard Shutdown PM', freq:'4 YEARLY', status:'ready', href:'Electric/8EPMCC_Maintenance.html', desc:'Motor Control Center. 12-item check, bus bar & wiring, starter contacts, interlocks.'},
+  {dept:'electric', cat:'sg', tag:'8EB-SWG-6KV', name:'6kV Switchgear', freq:'YEARLY', status:'soon', href:'#', desc:'Vacuum breaker, bus bar insulation, PT/CT secondary, relay trip test, IR scan.'},
+  {dept:'electric', cat:'sg', tag:'8EB-MCC-001', name:'Motor Control Centre (MCC)', freq:'YEARLY', status:'soon', href:'#', desc:'MCCB, contactor, overload relay, bus bar, terminal torque, door gasket.'},
+  {dept:'electric', cat:'sg', tag:'8EB-LV-SWB', name:'LV Switchboard 380V', freq:'YEARLY', status:'soon', href:'#', desc:'ACB/MCCB condition, bus bar temp, feeder labeling, interlock mechanism.'},
+  {dept:'electric', cat:'sg', tag:'8EB-PMCC-001', name:'Power MCC — Boiler', freq:'YEARLY', status:'soon', href:'#', desc:'Starter, VFD, thermal relay setting, busbar connection, overcurrent protection.'},
+  {dept:'electric', cat:'gen', tag:'8TG-GEN-100', name:'Generator Brush Gear PM', freq:'WEEKLY', status:'ready', href:'Electric/GEN_BrushGear_PM_Checksheet.html', desc:'Brush length & spring pressure, sparking, pigtail, slip ring temp. 20 magazine rotation.'},
+  {dept:'electric', cat:'motor', tag:'HV-MOTOR-SWGR', name:'HV Motor SWGR — PM Check Sheet', freq:'YEARLY', status:'ready', href:'Electric/HV_Motor_SWGR.html', desc:'Insulation, PI/DAR, RTD, protection settings and photos for HV motor switchgear.'},
+  {dept:'electric', cat:'motor', tag:'HV-MOTOR-6M', name:'HV Motor 6 Monthly PM Check Sheet', freq:'6 MONTHLY', status:'ready', href:'Electric/HV_Motor_6Monthly_PM.html', desc:'Cleaning, lubrication, RTD, breaker & protection relay check for 6 monthly HV motor & switchgear PM.'},
+  {dept:'electric', cat:'motor', tag:'8EB-BFP-MTR', name:'Boiler Feed Pump Motor (HV)', freq:'YEARLY', status:'soon', href:'#', desc:'Winding insulation, bearing temp, vibration, terminal connection, PI index.'},
+  {dept:'electric', cat:'motor', tag:'8EB-CWP-MTR', name:'Cooling Water Pump Motor', freq:'YEARLY', status:'soon', href:'#', desc:'Insulation resistance, bearing condition, coupling alignment, terminal tightness.'},
+  {dept:'electric', cat:'motor', tag:'8EB-VFD-001', name:'Variable Frequency Drive (VFD)', freq:'YEARLY', status:'soon', href:'#', desc:'DC bus voltage, IGBT temp, cooling fan, filter, firmware parameter backup.'},
+  {dept:'electric', cat:'motor', tag:'8EB-ID-FAN-MTR', name:'ID Fan Motor', freq:'YEARLY', status:'soon', href:'#', desc:'Insulation resistance, winding temp, vibration spectrum, bearing lubrication.'},
+  {dept:'electric', cat:'motor', tag:'8EB-PA-FAN-MTR', name:'PA Fan Motor', freq:'YEARLY', status:'soon', href:'#', desc:'Insulation resistance, current balance, bearing temperature, coupling check.'},
+  {dept:'electric', cat:'prot', tag:'8EB-REL-OC', name:'Overcurrent Relay (OCR)', freq:'2 YEARLY', status:'soon', href:'#', desc:'Setting verification, trip test, CT ratio check, timing test, event log review.'},
+  {dept:'electric', cat:'prot', tag:'8EB-REL-DIFF', name:'Differential Relay (87T)', freq:'2 YEARLY', status:'soon', href:'#', desc:'Bias characteristic test, CT check, interposing CT, restraint current, trip test.'},
+  {dept:'electric', cat:'prot', tag:'8EB-MET-KWHR', name:'Energy Meter (kWh)', freq:'YEARLY', status:'soon', href:'#', desc:'Meter accuracy, PT/CT secondary circuit, display reading, billing reconciliation.'},
+  {dept:'electric', cat:'ups', tag:'8EB-UPS-A / B', name:'UPS A & B — 1 Monthly PM', freq:'1 MONTHLY', status:'ready', href:'Electric/UPS_8EB-UPS-AB_Monthly.html', desc:'Cooling fans RPM, rectifier/inverter measurements, alarms, air filters, IR thermal.'},
+  {dept:'electric', cat:'ups', tag:'8EB-INV-001', name:'Static Inverter', freq:'YEARLY', status:'soon', href:'#', desc:'DC input voltage, AC output voltage/frequency, thyristor temp, filter capacitor.'},
+  {dept:'electric', cat:'esp', tag:'8BG-PCP-800A/B', name:'ESP Weekly Maintenance', freq:'WEEKLY', status:'ready', href:'Electric/ESP_8BGPCP800A_B.html', desc:'Rectifier T/R (16), CE Rapping (8+8), DE Rapping (16), GD Motors (8), Hopper Heater (8).'},
+  {dept:'electric', cat:'esp', tag:'LV MOTOR MCC', name:'LV Motor MCC — PM Check Sheet', freq:'PERIODIC', status:'ready', href:'Electric/LV_Motor_MCC.html', desc:'876 MCC LV motors — searchable tag, auto-fill, OL heater lookup, megger, Firebase, PDF.'},
+  {dept:'electric', cat:'motor', tag:'DMH CONVEYOR', name:'DMH Conveyor — Motor & Safety Device PM', freq:'PERIODIC', status:'ready', href:'Electric/DMH_Motor_PM_Checksheet.html', desc:'8 DMH units (A1-1~A2-4), cascading 3 Monthly - 3 Yearly PM, photo/PDF evidence with compression, Firebase, PDF.'},
+  {dept:'electric', cat:'motor', tag:'4000H MILL PM', name:'4000 Hours Mill PM — 5-in-1 Check Sheet', freq:'PERIODIC', status:'ready', href:'Electric/4000_Hours_Mill_PM.html', desc:'Select Mill A-F: cascades tags across Pulverizer HV motor, Feeder, Cleanout Conveyor, Lube Oil Pump & Oil Tank Heater. Combined submit, combined PDF, megger trend charts.'},
+  {dept:'electric', cat:'gnd', tag:'8EB-GND-SYSTEM', name:'Earthing / Grounding System', freq:'YEARLY', status:'soon', href:'#', desc:'Earth electrode resistance (≤1Ω), continuity check, visual ground conductor inspection.'},
+  {dept:'electric', cat:'gnd', tag:'8EB-LA-ARRESTER', name:'Lightning Arrester', freq:'YEARLY', status:'soon', href:'#', desc:'Leakage current, resistive current, counter reading, visual insulator inspection.'},
+  {dept:'electric', cat:'gnd', tag:'8EB-SPD-001', name:'Surge Protection Device (SPD)', freq:'YEARLY', status:'soon', href:'#', desc:'SPD indicator status, earth continuity, physical damage inspection, replacement check.'},
+  {dept:'electric', cat:'lifting', tag:'HOIST INSPECTION', name:'Hoist Inspection & Maintenance', freq:'PERIODIC', status:'ready', href:'Electric/Hoist_Inspection_Maintenance.html', desc:'Brake system, electrical measurements, limit switch, panel inspection, photo editor.'},
+  {dept:'electric', cat:'solar', tag:'PLTS-ASH-INV-01~11', name:'PV Ash Disposal 689 kWp — PM Check Sheet', freq:'YEARLY', status:'ready', href:'Electric/PLTS_AshDisposal_PM.html', desc:'11 inverters × 10 strings. Per-panel OK/NG/Repair condition grid with wiring position diagrams, selectable partial PDF export, pull last submission.'},
+  {dept:'electric', cat:'report', tag:'EIC8 — WEEKLY REPORT', name:'Weekly Report Dashboard', freq:'WEEKLY', status:'ready', href:'Electric/Weekly%20Report%20Dashboard%20EIC8.html', desc:'KPI summary, work order table, manpower & material recap, notes, Excel/PDF export.'},
+  {dept:'electric', cat:'report', tag:'EIC8 — VIEW ONLY', name:'Weekly Report — View Only (Read-Only)', freq:'WEEKLY', status:'ready', href:'Electric/Weekly%20Report%20Dashboard%20EIC8%20-%20View%20Only.html', desc:'Snapshot read-only untuk dibagikan ke tim — rekap KPI, progress, dan pie chart per work group. Tidak bisa diedit.'},
+  {dept:'electric', cat:'report', tag:'WORK ACTIVITY RECORD', name:'Corrective Maintenance Report', freq:'CORRECTIVE', status:'ready', href:'Electric/Work_Activity_Record.html', desc:'Free-form report builder — text sections, multi-photo gallery, annotation, print to PDF.'},
+  {dept:'electric', cat:'report', tag:'MCA — RCA REPORT', name:'Maintenance Corrective Action Report', freq:'CORRECTIVE', status:'ready', href:'Electric/Maintenance_Corrective_Action.html', desc:'Failure investigation report with structured Root Cause Analysis (5-Why / Fishbone / FMEA), narrative sections with in-context photos, PDF export & Review/Approval workflow.'},
+  {dept:'electric', cat:'motor', tag:'LV MOTOR BEARING', name:'LV Motor Bearing Replacement', freq:'CORRECTIVE', status:'ready', href:'Electric/LV_Motor_Bearing_Replacement.html', desc:'Motor rebuild check sheet — 82-motor searchable tag with auto-fill, physical/electrical testing (RTD, cable insulation), Solo Run temperature & vibration trend, PDF export.'},
+  {dept:'electric', cat:'gnd', tag:'LIGHTING/GROUNDING/ETC', name:'Lighting, Grounding & Etc Check Sheet', freq:'MONTHLY', status:'ready', href:'Electric/Lighting_Grounding_Etc_Checksheet.html', desc:'7-in-1 tabbed check sheet — Lightning Arrester, Grounding, Stentofon, Lighting, Emergency Lighting, Panel-DB, Socket Outlets — with Finding/LUX/earth-test dynamic tables and PDF export.'},
+
+  // ───────── INSTRUMENT ─────────
+  {dept:'instrument', cat:'trend', tag:'TREND', name:'Historical & Live Trend', freq:'—', status:'ready', href:'Instrument/trend/index.html', desc:'Grafik trend historis & live dari data checksheet PM — SO2, FEGT, CEMS Calibration, dan modul lainnya.'},
+  {dept:'instrument', cat:'report', tag:'MOD-09', name:'Maintenance Report Form', freq:'—', status:'ready', href:'Instrument/maintenance_report_form.html', desc:'Form untuk pengisian laporan maintenance dan dokumentasi kegiatan preventive maintenance unit secara terstruktur dan lengkap.'},
+  {dept:'instrument', cat:'warehouse', tag:'MOD-15', name:'Material Warehouse', freq:'—', status:'ready', href:'Instrument/material-warehouse.html', desc:'Database material dan spare part gudang. Manajemen inventaris, pencatatan stok, upload foto material, dan dokumentasi data warehouse.'},
+  {dept:'instrument', cat:'boiler', tag:'MOD-16', name:'Flow Meter FGD Inlet & Quencher', freq:'PERIODIC', status:'ready', href:'Instrument/flow-meter-fgd.html', desc:'PM flow transmitter spray water FGD A & B (Inlet & Quencher). Pemeriksaan, pembersihan, reading sebelum/sesudah cleaning, dan verifikasi parameter & dimensi probe.'},
+  {dept:'instrument', cat:'boiler', tag:'MOD-01', name:'PM O2 Inlet & Outlet (Monthly)', freq:'MONTHLY', status:'ready', href:'Instrument/form_o2_report.html', desc:'Report bulanan sensor O₂ inlet & outlet — cleaning probe & recalibration, dokumentasi 8 channel, cetak PDF.'},
+  {dept:'instrument', cat:'boiler', tag:'MOD-02', name:'CEMS Calibration', freq:'PERIODIC', status:'ready', href:'Instrument/cems_calibration.html', desc:'Kalibrasi sistem Continuous Emission Monitoring (CEMS). Zero/span check, calibration gas verification dan dokumentasi hasil.'},
+  {dept:'instrument', cat:'boiler', tag:'MOD-03', name:'FEGT & Leak Detection', freq:'PERIODIC', status:'ready', href:'Instrument/fegt.html', desc:'Furnace Exit Gas Temperature — 8 sensor, 21 path aktif. Leak Detection — 9 path superheater, reheater, economizer & bottom slope.'},
+  {dept:'instrument', cat:'boiler', tag:'MOD-04', name:'SO2 Scrubber Inlet', freq:'PERIODIC', status:'ready', href:'Instrument/so2.html', desc:'Monitoring dan diagnostik sensor SO₂ pada inlet scrubber. Pemeriksaan kualitas pembacaan dan status instrumen.'},
+  {dept:'instrument', cat:'boiler', tag:'MOD-05', name:'Opacity Monitor', freq:'PERIODIC', status:'ready', href:'Instrument/opacity.html', desc:'Pemeriksaan sensor opacity pada stack emisi. Validasi pembacaan transmittance dan kalibrasi instrumen.'},
+  {dept:'instrument', cat:'wwtp', tag:'MOD-10', name:'Analyzer Indicator Transmitter (pH)', freq:'PERIODIC', status:'ready', href:'Instrument/ph-analyzer.html', desc:'Pemeriksaan dan kalibrasi analyzer, indicator, dan transmitter pH. Verifikasi pembacaan, buffer calibration, dan kondisi elektroda sensor pH.'},
+  {dept:'instrument', cat:'boiler', tag:'MOD-11', name:'PM 4000 Hr Pulverizer & Coal Feeder Calibration', freq:'PERIODIC', status:'ready', href:'Instrument/coal_feeder_calibration.html', desc:'Kalibrasi coal feeder untuk akurasi laju aliran batu bara. Pemeriksaan gravimetric/volumetric feeder, zero/span check, dan dokumentasi hasil kalibrasi.'},
+  {dept:'instrument', cat:'boiler', tag:'MOD-12', name:'Inspection & Cleaning DCS HMI/OIS', freq:'PERIODIC', status:'ready', href:'Instrument/dcs-hmi-inspection.html', desc:'Inspeksi dan pembersihan perangkat DCS HMI dan Operator Interface Station. Pemeriksaan kondisi hardware, kebersihan panel, koneksi kabel, dan performa sistem.'},
+  {dept:'instrument', cat:'wwtp', tag:'MOD-13', name:'PM Conductivity', freq:'PERIODIC', status:'soon', href:'#', desc:'Preventive maintenance sensor konduktivitas. Pemeriksaan dan kalibrasi conductivity analyzer, verifikasi cell constant, dan pembersihan elektroda sensor. (Halaman belum tersedia)'},
+  {dept:'instrument', cat:'boiler', tag:'MOD-17', name:'PM HG Analyzer', freq:'3/6/9 MONTHLY · 1/2/5 YEARLY', status:'ready', href:'Instrument/pm-hg-analyzer.html', desc:'Preventive maintenance Total Mercury Analyzer HM-1400 TRX 2. Diagnostic dan reporting multi-frekuensi dengan evidence foto before/after.'},
+  {dept:'instrument', cat:'turbine', tag:'MOD-18', name:'Generator Stator Leak Monitoring', freq:'ANNUAL', status:'ready', href:'Instrument/generator_stator_leak_monitoring.html', desc:'Annual PM Generator Stator Leak Monitoring System (GE Vernova). Checklist inspeksi, measurement log, spare parts, approval, dan evidence foto.'},
+  {dept:'instrument', cat:'boiler', tag:'MOD-20', name:'Coal Silo Level Transmitter', freq:'PERIODIC', status:'ready', href:'Instrument/coal-silo-level.html', desc:'Inspeksi & maintenance Coal Silo Level Transmitter. Checklist per unit (BF-LI-500A s/d F), catatan kondisi, dan evidence foto.'},
+  {dept:'instrument', cat:'turbine', tag:'MOD-19', name:'Mark VIe Alarm & Module Inspection', freq:'PERIODIC', status:'ready', href:'Instrument/mark_vie_inspection.html', desc:'Inspeksi alarm dan modul kontrol Mark VIe (GE Vernova). Checklist kondisi modul, catatan alarm aktif, dan evidence foto per unit.'},
+  {dept:'instrument', cat:'outage', tag:'MOD-14', name:'Outage Maintenance', freq:'OUTAGE', status:'restricted', href:'Instrument/outage-index.html', desc:'Modul dokumentasi dan checklist untuk kegiatan maintenance saat outage unit. Mencakup inspeksi menyeluruh, perbaikan, dan verifikasi pasca outage. (Perlu passcode)'},
+];
+
+const STATUS_LABEL = { ready:'Aktif', soon:'Segera Hadir', restricted:'🔒 Passcode' };
+let LAST_SUBMISSION = {}; // tag -> ISO date string
+
+// Which department this page shows — driven by ?dept= in the URL, electric by default.
+const params = new URLSearchParams(location.search);
+const activeDept = params.get('dept') === 'instrument' ? 'instrument' : 'electric';
+const DEPT_META = {
+  electric:   { label: '⚡ Check Sheet Electric',   color: 'var(--electric)',   other: 'instrument' },
+  instrument: { label: '🛠 Check Sheet Instrument', color: 'var(--instrument)', other: 'electric'   },
+};
+
+document.documentElement.style.setProperty('--dept-color', DEPT_META[activeDept].color);
+document.getElementById('deptHeading').textContent = DEPT_META[activeDept].label;
+document.getElementById('systemTitle').textContent = 'EIC8 Check Sheet — ' + (activeDept === 'electric' ? 'Electric' : 'Instrument');
+document.getElementById('deptSwap').href = 'checksheets.html?dept=' + DEPT_META[activeDept].other;
+document.title = DEPT_META[activeDept].label + ' — EIC8 Check Sheet Digital Portal';
+
+function cardHtml(item) {
+  const clickable = item.href !== '#';
+  const cls = 'card' + (clickable ? ' clickable' : ' disabled');
+  const last = LAST_SUBMISSION[item.tag];
+  const lastHtml = last
+    ? `<span class="card-last">Terakhir: ${new Date(last).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'})}</span>`
+    : (item.status === 'ready' ? `<span class="card-last">Belum ada data</span>` : '');
+  const inner = `
+    <div class="card-top">
+      <span class="card-dept ${item.dept}">${item.dept === 'electric' ? '⚡ ELECTRIC' : '🛠 INSTRUMENT'}</span>
+      <span class="card-status ${item.status}">${STATUS_LABEL[item.status] || item.status}</span>
+    </div>
+    <div class="card-title">${item.name}</div>
+    <div class="card-tag">${item.tag}</div>
+    <div class="card-desc">${item.desc}</div>
+    <div class="card-meta">
+      <span class="card-freq">${item.freq}</span>
+      ${lastHtml}
+    </div>
+  `;
+  if (item.status === 'restricted') {
+    return `<div class="${cls}" style="--card-color:${item.dept==='electric'?'var(--electric)':'var(--instrument)'}" onclick="handleRestrictedClick('${item.href}')">${inner}</div>`;
+  }
+  return clickable
+    ? `<a class="${cls}" style="--card-color:${item.dept==='electric'?'var(--electric)':'var(--instrument)'}" href="${item.href}">${inner}</a>`
+    : `<div class="${cls}" style="--card-color:${item.dept==='electric'?'var(--electric)':'var(--instrument)'}">${inner}</div>`;
+}
+
+function handleRestrictedClick(href) {
+  const p = prompt('🔒 Masukkan passcode untuk akses modul ini:');
+  if (p === 'comingsoonbro') window.location.href = href;
+  else if (p !== null) alert('❌ Passcode salah!');
+}
+
+function render() {
+  const q = document.getElementById('search').value.trim().toLowerCase();
+  const statusVal = document.getElementById('statusFilter').value;
+  const filtered = DATA.filter(item => {
+    if (item.dept !== activeDept) return false;
+    if (statusVal !== 'all') {
+      if (statusVal === 'ready' && item.status === 'soon') return false;
+      if (statusVal === 'soon' && item.status !== 'soon') return false;
+    }
+    if (q) {
+      const hay = (item.name + ' ' + item.tag + ' ' + item.desc + ' ' + item.cat).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+  document.getElementById('grid').innerHTML = filtered.map(cardHtml).join('');
+  document.getElementById('noResults').style.display = filtered.length ? 'none' : 'block';
+  document.getElementById('resultCount').textContent = filtered.length + ' check sheet';
+  document.getElementById('migrationNote').style.display = (activeDept === 'instrument') ? 'block' : 'none';
+}
+
+document.getElementById('search').addEventListener('input', render);
+document.getElementById('statusFilter').addEventListener('change', render);
+
+render();
+
+// Live "last submission" status per asset tag, pulled from the shared Firestore
+// `checksheets` collection (see Electric/db-helper.js for the data contract).
+// Instrument's check sheets still write to Supabase as of this writing, so their
+// tags won't match here until that migration lands — this silently no-ops for them.
+(async function loadLiveStatus() {
+  try {
+    const snap = await db.collection('checksheets').get();
+    snap.forEach(doc => {
+      const d = doc.data();
+      const tag = (d.assetTag || '').trim();
+      if (!tag) return;
+      const created = d.createdAt || '';
+      if (!LAST_SUBMISSION[tag] || created > LAST_SUBMISSION[tag]) LAST_SUBMISSION[tag] = created;
+    });
+    render();
+  } catch (e) {
+    console.error('Gagal memuat status live dari Firestore:', e);
+  }
+})();
+</script>
+</body>
+</html>
