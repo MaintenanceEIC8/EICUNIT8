@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Riwayat PM — Unit 7</title>
+<title>Historical PM — Unit 8</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
@@ -13,11 +13,11 @@
 <body>
 
 <div class="topbar">
-  <button class="topbar-back" onclick="window.location.href='../reporting.html'">&#8592; Dashboard Reporting</button>
+  <button class="topbar-back" id="histBackBtn" onclick="window.location.href='../checksheets.html?dept=instrument'">&#8592; Dashboard Instrument</button>
   <div class="topbar-sep"></div>
-  <div class="topbar-logo">RIWAYAT</div>
+  <div class="topbar-logo">HISTORICAL PM</div>
   <div class="topbar-sep"></div>
-  <div class="topbar-sub">Riwayat Preventive Maintenance — Unit 8</div>
+  <div class="topbar-sub">Historical Preventive Maintenance — Unit 8</div>
   <div class="topbar-right"><div class="live-dot"></div></div>
 </div>
 
@@ -26,7 +26,7 @@
   <div class="page-header">
     <div>
       <div class="page-header-sub">Database Firebase</div>
-      <div class="page-header-title">Riwayat <span>PM</span></div>
+      <div class="page-header-title">Historical <span>PM</span></div>
     </div>
   </div>
 
@@ -317,8 +317,31 @@ window.addEventListener('message', function(e) {
   historySubmitDone(e.data.id, !!e.data.ok, e.data.error);
 });
 
-/* Auto-load all on open */
-loadHistory('');
+/* Auto-load on open — honour ?modul=<asset> deep-links from Dashboard Instrument
+   (checksheets.html card links), otherwise show everything. */
+(function initHistory() {
+  var params = new URLSearchParams(location.search);
+  var modul = params.get('modul');
+
+  // Back button: return to whichever surface opened this page.
+  try {
+    if (document.referrer.indexOf('reporting.html') >= 0) {
+      var b = document.getElementById('histBackBtn');
+      if (b) { b.textContent = '← Dashboard Reporting'; b.setAttribute('onclick', "window.location.href='../reporting.html'"); }
+    }
+  } catch (e) {}
+
+  if (modul) {
+    loadHistory(modul);
+    // highlight the matching filter button if there is one
+    document.querySelectorAll('#histTabList .btn-outline').forEach(function (btn) {
+      var m = (btn.getAttribute('onclick') || '').match(/loadHistory\('([^']*)'\)/);
+      if (m && m[1] === modul) { btn.style.background = 'var(--pri, #2563eb)'; btn.style.color = '#fff'; }
+    });
+  } else {
+    loadHistory('');
+  }
+})();
 </script>
 </body>
 </html>

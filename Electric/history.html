@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Historical PM — Electric</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="db-helper.js"></script>
+<script src="approval-helper.js"></script>
+<script>
+  // Portal gate — this page sits under Electric/, so it bounces to ../index.html.
+  try { if (localStorage.getItem('eic8_portal_unlock') !== '1') location.replace('../index.html'); }
+  catch (e) {}
+</script>
+<style>
+  :root {
+    --bg:#f4f7fb; --surf:#ffffff; --surf-2:#f8fafc; --bdr:#e3e8f0; --bdr-2:#d6dde7;
+    --txt:#0b1220; --txt-2:#475569; --txt-3:#94a3b8;
+    --pri:#2563eb; --pri-soft:#dbeafe; --pri-deep:#1d4ed8;
+    --ok:#10b981; --ok-soft:#d1fae5; --rose:#f43f5e; --rose-soft:#ffe4e6;
+    --amber:#b45309; --amber-soft:#fef3c7;
+    --display:'Space Grotesk',system-ui,sans-serif;
+    --body:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,'Consolas',monospace;
+    --shadow-sm:0 1px 2px rgba(15,23,42,0.04);
+    --shadow-lg:0 16px 32px rgba(15,23,42,0.12);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--body);background:var(--bg);color:var(--txt);min-height:100vh;line-height:1.5}
+
+  .page-hdr{
+    position:sticky;top:0;z-index:20;background:var(--surf);border-bottom:1px solid var(--bdr);
+    box-shadow:var(--shadow-sm);border-top:4px solid var(--amber);
+  }
+  .page-hdr-inner{
+    max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;
+    flex-wrap:wrap;gap:14px;padding:15px clamp(16px,4vw,40px);
+  }
+  .page-hdr-brand{display:flex;align-items:center;gap:12px}
+  .page-hdr-brand img{height:34px;width:auto;border-radius:6px}
+  .page-hdr-brand .co{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--txt-3);text-transform:uppercase}
+  .page-hdr-brand .ti{font-family:var(--display);font-size:17px;font-weight:700;color:var(--txt);letter-spacing:-0.3px}
+  .page-hdr-back{
+    font-size:12.5px;font-weight:600;color:var(--txt-2);text-decoration:none;
+    padding:7px 14px;border-radius:8px;border:1px solid var(--bdr);white-space:nowrap;
+  }
+  .page-hdr-back:hover{border-color:var(--amber);color:var(--amber);background:var(--amber-soft)}
+
+  .wrap{max-width:1180px;margin:0 auto;padding:24px clamp(16px,4vw,40px) 60px}
+
+  .toolbar{
+    display:flex;flex-wrap:wrap;gap:12px;align-items:center;
+    background:var(--surf);border:1px solid var(--bdr);border-radius:14px;
+    padding:14px 16px;margin-bottom:18px;box-shadow:var(--shadow-sm);
+  }
+  .toolbar label{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--txt-3)}
+  .toolbar select,.toolbar input{
+    background:var(--surf);border:1px solid var(--bdr);border-radius:9px;padding:9px 12px;
+    color:var(--txt);font-family:var(--body);font-size:13px;outline:none;
+  }
+  .toolbar select:focus,.toolbar input:focus{border-color:var(--pri);box-shadow:0 0 0 4px rgba(37,99,235,0.10)}
+  .toolbar .grow{flex:1 1 200px}
+  .toolbar .count{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--txt-3)}
+  .btn-sheet{
+    font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:9px;text-decoration:none;
+    background:var(--amber-soft);color:var(--amber);border:1px solid rgba(180,83,9,0.25);
+  }
+  .btn-sheet:hover{background:#fde9c8}
+
+  .asset-title{font-family:var(--display);font-size:20px;font-weight:700;margin-bottom:4px}
+  .asset-sub{font-size:12.5px;color:var(--txt-3);margin-bottom:18px}
+
+  .tbl-wrap{background:var(--surf);border:1px solid var(--bdr);border-radius:14px;overflow:hidden;box-shadow:var(--shadow-sm)}
+  .tbl-scroll{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:13px;min-width:820px}
+  th{
+    background:var(--surf-2);color:var(--txt-3);padding:12px 14px;text-align:left;
+    font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;
+    border-bottom:1px solid var(--bdr);white-space:nowrap;
+  }
+  td{padding:11px 14px;border-bottom:1px solid var(--bdr);vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tr.row-main{cursor:pointer;transition:background .12s}
+  tr.row-main:hover td{background:var(--surf-2)}
+  .mono{font-family:var(--mono);font-size:12px;color:var(--txt-2)}
+  .pill{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:999px;display:inline-block}
+  .pill.ok{background:var(--ok-soft);color:#047857}
+  .pill.ng{background:var(--rose-soft);color:#be123c}
+  .pill.status-approved{background:var(--ok-soft);color:#047857}
+  .pill.status-submitted{background:var(--surf-2);color:var(--txt-3)}
+  .pill.status-reviewed{background:var(--pri-soft);color:var(--pri-deep)}
+  .pill.status-none{background:var(--surf-2);color:var(--txt-3)}
+  .cnt-ok{color:var(--ok);font-weight:700;font-family:var(--mono)}
+  .cnt-ng{color:var(--rose);font-weight:700;font-family:var(--mono)}
+  .exp-row td{background:var(--surf-2);padding:14px 18px}
+  .exp-row .sheet-line{font-size:12px;color:var(--txt-2);margin:2px 0}
+  .exp-row .sheet-line b{color:var(--txt)}
+
+  .state{padding:56px 20px;text-align:center;color:var(--txt-3);font-size:13px}
+</style>
+</head>
+<body>
+
+<header class="page-hdr">
+  <div class="page-hdr-inner">
+    <div class="page-hdr-brand">
+      <img src="LOGO POMI.png" alt="POMI">
+      <div>
+        <div class="co">POMI &middot; PLTU Paiton Unit 8</div>
+        <div class="ti">Historical PM &mdash; Electric</div>
+      </div>
+    </div>
+    <a class="page-hdr-back" href="../checksheets.html?dept=electric">&larr; Dashboard Electric</a>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="asset-title" id="assetTitle">Historical PM</div>
+  <div class="asset-sub" id="assetSub">Riwayat submission check sheet PM dari database Firestore <code>checksheets</code>.</div>
+
+  <div class="toolbar">
+    <div style="display:flex;flex-direction:column;gap:5px">
+      <label for="assetSel">Asset</label>
+      <select id="assetSel"><option value="">Semua asset</option></select>
+    </div>
+    <div class="grow" style="display:flex;flex-direction:column;gap:5px">
+      <label for="q">Cari</label>
+      <input type="text" id="q" placeholder="WO / nama / checked by...">
+    </div>
+    <a class="btn-sheet" id="openSheet" style="display:none" target="_blank" rel="noopener">Buka Check Sheet ↗</a>
+    <span class="count" id="count"></span>
+  </div>
+
+  <div class="tbl-wrap">
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr>
+          <th>Tanggal PM</th><th>WO</th><th>Asset</th><th>Checked By</th>
+          <th style="text-align:center">OK</th><th style="text-align:center">NG</th>
+          <th>Status</th><th>Approval</th>
+        </tr></thead>
+        <tbody id="tbody"><tr><td colspan="8" class="state">Memuat data dari Firestore…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+const params = new URLSearchParams(location.search);
+const FILTER_TAG = params.get('tag') || '';
+const FILTER_PREFIX = params.get('prefix') || '';
+const SHEET_HREF = params.get('sheet') || '';
+
+let allRows = [];
+let approvalByCs = {};  // checksheetId -> latest status
+
+function esc(s){ const d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; }
+function fdate(d){
+  const t = d.executionDate || (d.createdAt || '').slice(0,10);
+  if (!t) return '—';
+  const dt = new Date(t);
+  return isNaN(dt) ? t : dt.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
+}
+function matchesFilter(d){
+  const tag = (d.assetTag || '');
+  if (FILTER_TAG) return tag === FILTER_TAG;
+  if (FILTER_PREFIX) return tag.indexOf(FILTER_PREFIX) === 0;
+  return true;
+}
+
+function approvalPill(d){
+  const st = (approvalByCs[d.id] || '').toLowerCase();
+  const label = { submitted:'Submitted', reviewed:'Reviewed', approved:'Approved', returned_to_technician:'Dikembalikan' }[st];
+  if (label) return `<span class="pill status-${st === 'returned_to_technician' ? 'ng' : st}">${label}</span>`;
+  return `<span class="pill status-none">—</span>`;
+}
+
+function sheetsSummary(d){
+  if (!d.sheets || typeof d.sheets !== 'object') return '<div class="sheet-line" style="color:var(--txt-3)">Tidak ada rincian sheet tersimpan.</div>';
+  return Object.keys(d.sheets).map(k => {
+    const s = d.sheets[k] || {};
+    const rows = Array.isArray(s.rows) ? s.rows.length : 0;
+    const cols = Array.isArray(s.columns) ? s.columns.length : 0;
+    return `<div class="sheet-line"><b>${esc(s.title || k)}</b> — ${rows} item${cols ? ' · ' + cols + ' kolom' : ''}${s.remark ? ' · catatan: ' + esc(s.remark) : ''}</div>`;
+  }).join('');
+}
+
+function render(){
+  const q = document.getElementById('q').value.trim().toLowerCase();
+  const selAsset = document.getElementById('assetSel').value;
+  const rows = allRows.filter(d => {
+    if (selAsset && d.assetTag !== selAsset) return false;
+    if (q) {
+      const hay = ((d.woNumber||'') + ' ' + (d.assetName||'') + ' ' + (d.assetTag||'') + ' ' + (d.checkedBy||'')).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+  const tbody = document.getElementById('tbody');
+  document.getElementById('count').textContent = rows.length + ' submission';
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="8" class="state">Belum ada submission untuk filter ini.</td></tr>'; return; }
+  tbody.innerHTML = rows.map((d,i) => {
+    const ok = d.countOk || 0, ng = d.countNg || 0;
+    const ov = (d.overallStatus || '').toUpperCase();
+    return `<tr class="row-main" data-i="${i}">
+      <td class="mono">${fdate(d)}</td>
+      <td class="mono">${esc(d.woNumber || '—')}</td>
+      <td><div style="font-weight:600">${esc(d.assetName || d.assetTag || '—')}</div><div class="mono" style="font-size:11px">${esc(d.assetTag || '')}</div></td>
+      <td>${esc(d.checkedBy || '—')}</td>
+      <td style="text-align:center" class="cnt-ok">${ok}</td>
+      <td style="text-align:center" class="cnt-ng">${ng}</td>
+      <td>${ov ? `<span class="pill ${ov === 'OK' ? 'ok' : 'ng'}">${ov}</span>` : '—'}</td>
+      <td>${approvalPill(d)}</td>
+    </tr>
+    <tr class="exp-row" id="exp-${i}" hidden><td colspan="8">${sheetsSummary(d)}</td></tr>`;
+  }).join('');
+  tbody.querySelectorAll('.row-main').forEach(tr => {
+    tr.addEventListener('click', () => {
+      const ex = document.getElementById('exp-' + tr.dataset.i);
+      if (ex) ex.hidden = !ex.hidden;
+    });
+  });
+}
+
+function buildAssetOptions(){
+  const sel = document.getElementById('assetSel');
+  const tags = [...new Set(allRows.map(d => d.assetTag).filter(Boolean))].sort();
+  sel.innerHTML = '<option value="">Semua asset (' + allRows.length + ')</option>' +
+    tags.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
+}
+
+(async function () {
+  try {
+    const [raw, approvals] = await Promise.all([
+      DB.getAll({ dedupe: true }),
+      (typeof Approvals !== 'undefined' ? Approvals.getAll() : Promise.resolve([])).catch(() => []),
+    ]);
+    (approvals || []).forEach(a => {
+      // getAll() is ordered createdAt desc, so the first one seen per checksheet is newest
+      if (a.checksheetId && !(a.checksheetId in approvalByCs)) approvalByCs[a.checksheetId] = a.status || '';
+    });
+    allRows = (raw || []).filter(matchesFilter)
+      .sort((a,b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+
+    if (FILTER_TAG || FILTER_PREFIX) {
+      const label = FILTER_TAG || (FILTER_PREFIX + '…');
+      const name = (allRows[0] && allRows[0].assetName) || '';
+      document.getElementById('assetTitle').textContent = name ? name : label;
+      document.getElementById('assetSub').textContent = 'Asset: ' + label + ' · ' + allRows.length + ' submission tersimpan';
+      // asset dropdown not useful when already scoped
+      document.querySelector('#assetSel').parentElement.style.display = 'none';
+    } else {
+      buildAssetOptions();
+    }
+    // checksheets.html passes a repo-root path like "Electric/Xxx.html";
+    // this page lives in Electric/, so strip that prefix for a sibling link.
+    const sheetRel = SHEET_HREF.replace(/^Electric\//, '');
+    if (sheetRel && /^[\w .%-]+\.html$/i.test(sheetRel)) {
+      const a = document.getElementById('openSheet');
+      a.href = sheetRel;
+      a.style.display = 'inline-block';
+    }
+    render();
+  } catch (e) {
+    console.error('Gagal memuat checksheets:', e);
+    document.getElementById('tbody').innerHTML =
+      '<tr><td colspan="8" class="state">Gagal memuat data dari Firestore: ' + esc(e.message || e) + '</td></tr>';
+  }
+})();
+
+document.getElementById('q').addEventListener('input', render);
+document.getElementById('assetSel').addEventListener('change', render);
+</script>
+</body>
+</html>
