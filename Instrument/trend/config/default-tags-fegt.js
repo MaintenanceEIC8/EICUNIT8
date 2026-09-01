@@ -34,7 +34,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -54,7 +54,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -74,7 +74,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -94,7 +94,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -114,7 +114,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -134,7 +134,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -154,7 +154,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -174,7 +174,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -194,7 +194,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -214,7 +214,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -234,7 +234,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -254,7 +254,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -274,7 +274,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -294,7 +294,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -314,7 +314,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -334,7 +334,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -354,7 +354,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -374,7 +374,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -394,7 +394,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -414,7 +414,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -434,7 +434,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -454,7 +454,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -474,7 +474,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -494,7 +494,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -514,7 +514,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -534,7 +534,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -554,7 +554,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -574,7 +574,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -594,7 +594,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -614,7 +614,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [
@@ -634,7 +634,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'FEGT & Leak Detection',
     updateInterval: null,
     series: [

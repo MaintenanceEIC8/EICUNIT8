@@ -38,7 +38,7 @@ window.DCS_DEFAULT_TAGS = [
     engineeringLow: 0, engineeringHigh: 50, min: 0, max: 50, chartMax: 60,
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true, enabled: true,
-    source: 'supabase:pm_records', sourceModul: 'CEMS Calibration', updateInterval: null,
+    source: 'firestore:pm_records', sourceModul: 'CEMS Calibration', updateInterval: null,
     series: [
       { key: 'Actual',   label: 'Actual',   color: '#ab2121' },
       { key: 'Expected', label: 'Expected', color: '#ca7e72' }
@@ -52,7 +52,7 @@ window.DCS_DEFAULT_TAGS = [
     engineeringLow: 0, engineeringHigh: 500, min: 0, max: 500, chartMax: 550,
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true, enabled: true,
-    source: 'supabase:pm_records', sourceModul: 'CEMS Calibration', updateInterval: null,
+    source: 'firestore:pm_records', sourceModul: 'CEMS Calibration', updateInterval: null,
     series: [
       { key: 'Actual',   label: 'Actual',   color: '#9c691e' },
       { key: 'Expected', label: 'Expected', color: '#bea254' }
@@ -66,7 +66,7 @@ window.DCS_DEFAULT_TAGS = [
     engineeringLow: 0, engineeringHigh: 500, min: 0, max: 500, chartMax: 550,
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true, enabled: true,
-    source: 'supabase:pm_records', sourceModul: 'CEMS Calibration', updateInterval: null,
+    source: 'firestore:pm_records', sourceModul: 'CEMS Calibration', updateInterval: null,
     series: [
       { key: 'Actual',   label: 'Actual',   color: '#667917' },
       { key: 'Expected', label: 'Expected', color: '#78983a' }
@@ -80,7 +80,7 @@ window.DCS_DEFAULT_TAGS = [
     engineeringLow: 0, engineeringHigh: 50, min: 0, max: 50, chartMax: 60,
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true, enabled: true,
-    source: 'supabase:pm_records', sourceModul: 'CEMS Calibration', updateInterval: null,
+    source: 'firestore:pm_records', sourceModul: 'CEMS Calibration', updateInterval: null,
     series: [
       { key: 'Actual',   label: 'Actual',   color: '#246613' },
       { key: 'Expected', label: 'Expected', color: '#3e9338' }
@@ -94,7 +94,7 @@ window.DCS_DEFAULT_TAGS = [
     engineeringLow: 0, engineeringHigh: 500, min: 0, max: 500, chartMax: 550,
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true, enabled: true,
-    source: 'supabase:pm_records', sourceModul: 'CEMS Calibration', updateInterval: null,
+    source: 'firestore:pm_records', sourceModul: 'CEMS Calibration', updateInterval: null,
     series: [
       { key: 'Actual',   label: 'Actual',   color: '#1a8946' },
       { key: 'Expected', label: 'Expected', color: '#4ebc89' }
@@ -108,7 +108,7 @@ window.DCS_DEFAULT_TAGS = [
     engineeringLow: 0, engineeringHigh: 50, min: 0, max: 50, chartMax: 60,
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true, enabled: true,
-    source: 'supabase:pm_records', sourceModul: 'CEMS Calibration', updateInterval: null,
+    source: 'firestore:pm_records', sourceModul: 'CEMS Calibration', updateInterval: null,
     series: [
       { key: 'Actual',   label: 'Actual',   color: '#21abab' },
       { key: 'Expected', label: 'Expected', color: '#72beca' }
@@ -122,7 +122,7 @@ window.DCS_DEFAULT_TAGS = [
     engineeringLow: 0, engineeringHigh: 1000, min: 0, max: 1000, chartMax: 1100,
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true, enabled: true,
-    source: 'supabase:pm_records', sourceModul: 'CEMS Calibration', updateInterval: null,
+    source: 'firestore:pm_records', sourceModul: 'CEMS Calibration', updateInterval: null,
     series: [
       { key: 'Actual',   label: 'Actual',   color: '#2158ab' },
       { key: 'Expected', label: 'Expected', color: '#728aca' }
@@ -136,7 +136,7 @@ window.DCS_DEFAULT_TAGS = [
     engineeringLow: 0, engineeringHigh: 5, min: 0, max: 5, chartMax: 6,
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true, enabled: true,
-    source: 'supabase:pm_records', sourceModul: 'CEMS Calibration', updateInterval: null,
+    source: 'firestore:pm_records', sourceModul: 'CEMS Calibration', updateInterval: null,
     series: [
       { key: 'Actual',   label: 'Actual',   color: '#3c21ab' },
       { key: 'Expected', label: 'Expected', color: '#9072ca' }
@@ -150,7 +150,7 @@ window.DCS_DEFAULT_TAGS = [
     engineeringLow: 0, engineeringHigh: 20, min: 0, max: 20, chartMax: 22,
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true, enabled: true,
-    source: 'supabase:pm_records', sourceModul: 'CEMS Calibration', updateInterval: null,
+    source: 'firestore:pm_records', sourceModul: 'CEMS Calibration', updateInterval: null,
     series: [
       { key: 'Actual',   label: 'Actual',   color: '#9021ab' },
       { key: 'Expected', label: 'Expected', color: '#c472ca' }
@@ -164,7 +164,7 @@ window.DCS_DEFAULT_TAGS = [
     engineeringLow: 0, engineeringHigh: 25, min: 0, max: 25, chartMax: 26,
     alarmLowLow: null, alarmLow: null, alarmHigh: null, alarmHighHigh: null,
     visible: true, enabled: true,
-    source: 'supabase:pm_records', sourceModul: 'CEMS Calibration', updateInterval: null,
+    source: 'firestore:pm_records', sourceModul: 'CEMS Calibration', updateInterval: null,
     series: [
       { key: 'Actual',   label: 'Actual',   color: '#ab2174' },
       { key: 'Expected', label: 'Expected', color: '#ca729b' }

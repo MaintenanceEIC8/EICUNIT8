@@ -41,7 +41,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'SO2 Scrubber Inlet',
     updateInterval: null, // event-based, bukan interval
     series: [
@@ -67,7 +67,7 @@ window.DCS_DEFAULT_TAGS = [
     alarmHighHigh: null,
     visible: true,
     enabled: true,
-    source: 'supabase:pm_records',
+    source: 'firestore:pm_records',
     sourceModul: 'SO2 Scrubber Inlet',
     updateInterval: null,
     series: [
