@@ -22,6 +22,7 @@
     --shadow-lg: 0 16px 32px rgba(0,0,0,0.12);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  [hidden] { display: none !important; }
   body {
     background: var(--bg);
     color: var(--text-dark);
@@ -227,7 +228,7 @@ if (safeGet(UNLOCK_KEY) === '1') {
 
 document.getElementById('gateForm').addEventListener('submit', e => {
   e.preventDefault();
-  const val = document.getElementById('gateInput').value;
+  const val = document.getElementById('gateInput').value.trim();
   if (val === PORTAL_PASSWORD) {
     safeSet(UNLOCK_KEY, '1');
     document.getElementById('gateErr').textContent = '';
