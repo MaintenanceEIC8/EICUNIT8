@@ -17,6 +17,8 @@
   <script src="load-merge-modal.js"></script>
   <script src="auth-session.js"></script>
   <script src="technician-auth.js"></script>
+  <script src="img-helper.js"></script>
+  <script src="photo-kit.js"></script>
 
   <style>
     :root{
@@ -105,6 +107,26 @@
       .grid-2{grid-template-columns:1fr}
       table{display:block;overflow:auto}
     }
+
+    /* ── EVIDENCE PHOTOS (PhotoKit) ───────────────────── */
+    .photo-drop{border:2px dashed var(--line);border-radius:10px;padding:20px 16px;text-align:center;cursor:pointer;background:var(--panel-2);transition:all .2s;margin-bottom:12px}
+    .photo-drop:hover{border-color:var(--accent);background:#eef7f3}
+    .photo-drop-ico{font-size:26px;margin-bottom:4px;pointer-events:none}
+    .photo-drop-txt{color:#60756d;font-size:13px;pointer-events:none}
+    .photo-drop-txt strong{color:var(--accent)}
+    .photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+    .photo-item{border:1px solid var(--line);border-radius:10px;background:#fff;overflow:hidden}
+    .photo-img-wrap{background:var(--panel-2);display:flex;align-items:center;justify-content:center;height:150px}
+    .photo-img-wrap img{max-width:100%;max-height:150px;width:auto;height:auto;object-fit:contain;display:block}
+    .photo-ctrl{display:flex;flex-wrap:wrap;gap:4px;align-items:center;padding:6px 7px;border-top:1px solid var(--line)}
+    .p-btn{border:1px solid var(--line);background:var(--panel-2);color:var(--steel);border-radius:5px;padding:3px 7px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit}
+    .p-btn:hover{background:#dfeee8}
+    .p-btn.del{border-color:#f3c6c6;background:#fdeeee;color:var(--ng)}
+    .p-sz{font-size:10px;color:#60756d;margin-left:auto}
+    .photo-cap{width:100%;border:none;border-top:1px solid var(--line);padding:6px 8px;font-size:12px;font-family:inherit;color:var(--ink);background:transparent}
+    .photo-cap:focus{outline:none;background:var(--panel-2)}
+    .photo-empty{color:#60756d;font-size:12px;text-align:center;padding:10px}
+    .photo-cnt{font-size:12px;color:#60756d;font-weight:600}
   </style>
 </head>
 <body>
@@ -220,6 +242,19 @@
 
     <div class="panel">
       <div class="section-head">
+        <h3>Evidence Photos</h3>
+        <span class="photo-cnt" id="photo-cnt">0 foto</span>
+      </div>
+      <div class="photo-drop" onclick="pickPhotos(this)">
+        <div class="photo-drop-ico">📷</div>
+        <div class="photo-drop-txt"><strong>Klik untuk menambah foto</strong><br>
+          <small style="font-size:11px">Kamera atau galeri &middot; bisa banyak sekaligus &middot; crop &amp; ukuran cetak diatur setelah foto dipilih</small></div>
+      </div>
+      <div class="photo-grid" id="photo-grid"></div>
+    </div>
+
+    <div class="panel">
+      <div class="section-head">
         <h3>Findings & Recommendation</h3>
         <span class="subnote">Summary</span>
       </div>
@@ -254,10 +289,12 @@
         if (el.id) data.fields[el.id] = el.value;
       });
       localStorage.setItem('feeder_verification_draft', JSON.stringify(data));
+      savePhotoDraft();
       showNotice('✅ Draft berhasil disimpan', 'ok');
     }
 
     function loadDraft() {
+      loadPhotoDraft();
       const raw = localStorage.getItem('feeder_verification_draft');
       if (!raw) return;
       try {
@@ -275,7 +312,6 @@
       } catch (e) {
         console.warn('Draft load failed', e);
       }
-      updateSummary();
     }
 
     function scheduleAutoSave() {
@@ -289,10 +325,144 @@
       el.className = 'notice ' + kind;
     }
 
-    function generatePDF() {
+    // ── EVIDENCE PHOTOS (PhotoKit) ─────────────────────
+    // Same shared pipeline as every other check sheet in this repo: source
+    // picker -> EXIF-upright downscale (img-helper.js) -> crop modal that also
+    // fixes the print size in cm. Each entry carries its pixel size AND that
+    // cm size, so generatePDF() draws it at exactly that size at its own
+    // aspect ratio and can never stretch it.
+    let PHOTOS = []; // [{src,w,h,widthCm,heightCm,caption}]
+
+    function pickPhotos(el) {
+      PhotoKit.upload(el, { multiple: true }, entry => {
+        if (!entry) return;
+        entry.caption = '';
+        PHOTOS.push(entry);
+        renderPhotos();
+      });
+    }
+
+    function recropPhotoAt(i) {
+      const cur = PHOTOS[i]; if (!cur) return;
+      PhotoKit.recrop(cur, e => {
+        if (!e) return;
+        e.caption = cur.caption || '';
+        PHOTOS[i] = e; // replace in place: order and captions are index-based
+        renderPhotos();
+      });
+    }
+
+    function rotatePhotoAt(i, deg) {
+      const img = new Image();
+      img.onload = () => {
+        const Wp = img.naturalWidth, Hp = img.naturalHeight;
+        const swap = ((deg % 360) + 360) % 360 === 90 || ((deg % 360) + 360) % 360 === 270;
+        const cv = document.createElement('canvas');
+        cv.width = swap ? Hp : Wp; cv.height = swap ? Wp : Hp;
+        const ctx = cv.getContext('2d');
+        ctx.translate(cv.width / 2, cv.height / 2);
+        ctx.rotate(deg * Math.PI / 180);
+        ctx.drawImage(img, -Wp / 2, -Hp / 2);
+        const p = PHOTOS[i];
+        p.src = cv.toDataURL('image/jpeg', 0.92);
+        p.dataUrl = p.src;
+        p.w = cv.width; p.h = cv.height; // a quarter turn swaps the axes...
+        if (swap && p.widthCm && p.heightCm) { const t = p.widthCm; p.widthCm = p.heightCm; p.heightCm = t; } // ...and the print size with them
+        renderPhotos();
+      };
+      img.src = PHOTOS[i].src;
+    }
+
+    function removePhotoAt(i) {
+      if (!confirm('Hapus foto ini?')) return;
+      PHOTOS.splice(i, 1);
+      renderPhotos();
+    }
+
+    function renderPhotos() {
+      const grid = document.getElementById('photo-grid');
+      if (!grid) return;
+      const cnt = document.getElementById('photo-cnt');
+      if (cnt) cnt.textContent = PHOTOS.length + ' foto';
+      if (!PHOTOS.length) { grid.innerHTML = '<div class="photo-empty">Belum ada foto.</div>'; return; }
+      grid.innerHTML = PHOTOS.map((p, i) => `
+        <div class="photo-item">
+          <div class="photo-img-wrap"><img src="${p.src}" alt="Foto ${i + 1}"></div>
+          <div class="photo-ctrl">
+            <button class="p-btn" onclick="recropPhotoAt(${i})" title="Crop &amp; ukuran cetak">✂ Crop</button>
+            <button class="p-btn" onclick="rotatePhotoAt(${i},-90)" title="Putar kiri">↺</button>
+            <button class="p-btn" onclick="rotatePhotoAt(${i},90)" title="Putar kanan">↻</button>
+            <button class="p-btn del" onclick="removePhotoAt(${i})" title="Hapus">✕</button>
+            <span class="p-sz">${p.widthCm ? p.widthCm.toFixed(1) + '×' + p.heightCm.toFixed(1) + 'cm' : ''}</span>
+          </div>
+          <input class="photo-cap" type="text" placeholder="Caption / keterangan foto ${i + 1}…"
+            value="${(p.caption || '').replace(/"/g, '&quot;')}" oninput="PHOTOS[${i}].caption=this.value">
+        </div>`).join('');
+    }
+
+    // Photos live in their own localStorage key: they are far bigger than the
+    // rest of the draft, and a quota error must not take the whole draft down
+    // with it.
+    function savePhotoDraft() {
+      try {
+        localStorage.setItem('feeder_verification_draft_photos', JSON.stringify(
+          PHOTOS.map(p => ({ src: p.src, caption: p.caption, w: p.w, h: p.h, widthCm: p.widthCm, heightCm: p.heightCm }))));
+      } catch (e) { showNotice('⚠️ Draft tersimpan, tapi foto terlalu besar untuk disimpan.', 'err'); }
+    }
+    function loadPhotoDraft() {
+      try {
+        const raw = localStorage.getItem('feeder_verification_draft_photos');
+        if (!raw) return;
+        PHOTOS = JSON.parse(raw) || [];
+        renderPhotos();
+      } catch (e) {}
+    }
+
+    // Review & Approval hook: load-merge-modal.js calls this after a Load &
+    // Merge or a revision-banner restore, handing back every photo uploaded to
+    // Drive for the selected submission(s) as {groupKey:[{url,caption,w,h,
+    // widthCm,heightCm}, ...]}. This file only ever uploads under one group
+    // key ('main', see submitToDb()'s `photos:{main:PHOTOS}`).
+    // overwrite=true: replace PHOTOS entirely with the restored set.
+    // overwrite=false (merge): only restore if PHOTOS is CURRENTLY EMPTY — a
+    // technician's own in-progress photos must never be silently overwritten.
+    async function restorePhotosFromUrls(photoUrls, overwrite) {
+      if (!photoUrls) return 0;
+      const allEntries = [];
+      for (const key of Object.keys(photoUrls)) {
+        const list = photoUrls[key];
+        if (Array.isArray(list)) allEntries.push(...list);
+      }
+      if (!allEntries.length) return 0;
+
+      if (!overwrite && PHOTOS.length) return 0;
+
+      const restored = [];
+      for (const entry of allEntries) {
+        if (!entry || !entry.url) continue;
+        try {
+          const dataUrl = await Storage.toDataUrl(entry.url);
+          restored.push({
+            src: dataUrl, dataUrl: dataUrl, caption: entry.caption || '',
+            w: entry.w, h: entry.h, widthCm: entry.widthCm, heightCm: entry.heightCm,
+          });
+        } catch (e) {
+          console.error('restorePhotosFromUrls: gagal memuat 1 foto, lanjut ke foto berikutnya:', e);
+        }
+      }
+      if (!restored.length) return 0;
+
+      PHOTOS = overwrite ? restored : PHOTOS.concat(restored);
+      renderPhotos();
+      savePhotoDraft();
+      return restored.length;
+    }
+
+    function generatePDF(opts = {}) {
       const { jsPDF } = window.jspdf;
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
       const margin = 14;
 
       pdf.setFillColor(30, 76, 70);
@@ -310,31 +480,78 @@
       pdf.text('Feeder Tag: ' + tag, pageW / 2 + 10, 35);
       pdf.text('Date: ' + dateVal, margin, 41);
 
+      let y = 48;
+      function ckY(need) {
+        if (y + need > pageH - 18) { pdf.addPage(); y = 20; }
+      }
+
+      // Evidence photos — drawn before Findings, same 2-up aspect-safe layout
+      // every other check sheet in this repo uses (PhotoKit.fit/draw never
+      // stretches a photo, only fits it inside the given box, and centres it
+      // when the box is a different shape than the photo).
+      if (PHOTOS.length) {
+        ckY(16);
+        pdf.setFontSize(12);
+        pdf.setTextColor(28, 53, 72);
+        pdf.text('Evidence Photos', margin, y);
+        y += 6;
+        const PCOLS = 2, PGAP = 4;
+        const PW = (pageW - margin * 2 - PGAP * (PCOLS - 1)) / PCOLS, PH_MAX = 80;
+        for (let i = 0; i < PHOTOS.length; i += PCOLS) {
+          const row = PHOTOS.slice(i, i + PCOLS);
+          const dims = row.map(p => PhotoKit.fit(p, PW, PH_MAX));
+          const rowH = Math.max(...dims.map(d => d.h));
+          const hasCap = row.some(p => p.caption);
+          ckY(rowH + (hasCap ? 13 : 7));
+          row.forEach((p, ci) => {
+            const px = margin + ci * (PW + PGAP);
+            PhotoKit.draw(pdf, p, px, y, PW, rowH, { align: 'center' });
+            if (p.caption) {
+              pdf.setFont('helvetica', 'italic'); pdf.setFontSize(7); pdf.setTextColor(120, 120, 120);
+              pdf.text(p.caption, px + PW / 2, y + rowH + 4, { align: 'center', maxWidth: PW - 2 });
+            }
+          });
+          y += rowH + (hasCap ? 12 : 6);
+          pdf.setFont('helvetica', 'normal');
+        }
+        y += 6;
+      }
+
       const findings = (document.getElementById('findings').value || '—').trim();
       const rec = (document.getElementById('recommendations').value || '—').trim();
 
+      ckY(28);
       pdf.setFontSize(11);
       pdf.setFillColor(238, 244, 255);
-      pdf.rect(margin, 48, pageW - margin * 2, 22, 'F');
+      pdf.rect(margin, y, pageW - margin * 2, 22, 'F');
       pdf.setTextColor(28, 53, 72);
-      pdf.text('Findings', margin + 4, 60);
+      pdf.text('Findings', margin + 4, y + 12);
       pdf.setTextColor(20, 30, 30);
       pdf.setFontSize(9);
-      pdf.text(pdf.splitTextToSize(findings || '—', pageW - margin * 2 - 12), margin + 4, 68);
+      pdf.text(pdf.splitTextToSize(findings || '—', pageW - margin * 2 - 12), margin + 4, y + 20);
+      y += 28;
 
-      const y2 = 92;
+      ckY(24);
       pdf.setFontSize(10);
       pdf.setFillColor(245, 248, 246);
-      pdf.rect(margin, y2, pageW - margin * 2, 20, 'F');
+      pdf.rect(margin, y, pageW - margin * 2, 20, 'F');
       pdf.setTextColor(28, 53, 72);
-      pdf.text('Recommendation / Corrective Action', margin + 4, y2 + 11);
+      pdf.text('Recommendation / Corrective Action', margin + 4, y + 11);
       pdf.setTextColor(20, 30, 30);
       const recLines = pdf.splitTextToSize(rec || '—', pageW - margin * 2 - 14);
-      pdf.text(recLines, margin + 4, y2 + 18);
+      pdf.text(recLines, margin + 4, y + 18);
 
       const fileName = 'Feeder_Verification_' + (document.getElementById('asset-tag').value || 'FEEDER').replace(/[^a-zA-Z0-9_-]/g, '_') + '.pdf';
-      pdf.save(fileName);
-      showNotice('✅ PDF berhasil dibuat: ' + fileName, 'ok');
+      // opts.silent: used by submitToDb() to build the archival PDF uploaded to
+      // Drive for the review/approval workflow — no download dialog, just hand
+      // the built pdf object back to the caller.
+      if (opts.silent) {
+        // no-op: caller reads the returned pdf object directly
+      } else {
+        pdf.save(fileName);
+        showNotice('✅ PDF berhasil dibuat: ' + fileName, 'ok');
+      }
+      return pdf;
     }
 
     async function submitToDb() {
@@ -348,12 +565,62 @@
       base.recommendations = document.getElementById('recommendations')?.value.trim() || '';
       base.overallCondition = document.getElementById('overall-condition')?.value || 'OK';
 
+      // Asset tag is a free-typed field here (not a fixed dropdown), so
+      // re-point SubmitGuard at whatever tag is currently in the box before
+      // checking for a duplicate-visit candidate — see CLAUDE.md's
+      // "multi-asset / no-fixed-tag sheets" note.
+      SubmitGuard.init({ assetTag });
+      const target = await SubmitGuard.resolveSubmitTarget(base.woNumber);
+      if (target.mode === 'cancel') return;
+
+      const submitBtns = [...document.querySelectorAll('[onclick="submitToDb()"]')];
+      submitBtns.forEach(b => b.disabled = true);
+      SubmitGuard.showProgress();
+
+      let id;
       try {
-        const id = await DB.save(base);
-        showNotice('✅ Data berhasil disubmit ke database. ID: ' + id, 'ok');
+        SubmitGuard.setProgress(5, 'Menyimpan data checklist...');
+        id = target.mode === 'overwrite' ? await DB.update(target.targetId, base) : await DB.save(base);
       } catch (err) {
+        SubmitGuard.hideProgress();
+        submitBtns.forEach(b => b.disabled = false);
         console.error(err);
         showNotice('⚠️ Submit gagal. Silakan cek konfigurasi Firebase / koneksi.', 'err');
+        return;
+      }
+
+      // Photos + archival PDF + the review/approval workflow record are all
+      // best-effort ON TOP of the checksheet doc saved above. A Drive/network
+      // hiccup here must never make this look like the whole submission
+      // failed — the checklist data the technician actually filled in is
+      // already safely saved by this point.
+      let filesOk = true;
+      try {
+        filesOk = await Approvals.submitWithFiles(id, {
+          photos: { main: PHOTOS },
+          pdfBuilder: () => generatePDF({ silent: true }),
+          assetTag,
+          assetName: 'Feeder Verification',
+          checksheetFile: 'Feeder_Verification_Checksheet.html',
+          submittedBy: base.checkedBy,
+          revisionOf: LoadMergeModal.getReviseOfApprovalId(),
+          existingApprovalId: target.mode === 'overwrite' ? target.approvalId : null,
+          onProgress: (pct, label) => SubmitGuard.setProgress(10 + Math.round(pct * 0.85), label),
+        });
+      } catch (err) {
+        filesOk = false;
+        console.error('Upload foto/PDF/approval record gagal:', err);
+      }
+
+      SubmitGuard.markSubmitted(id, { woNumber: base.woNumber, executionDate: base.executionDate, checkedBy: base.checkedBy });
+      SubmitGuard.setProgress(100, 'Selesai!');
+      setTimeout(() => SubmitGuard.hideProgress(), 500);
+      submitBtns.forEach(b => b.disabled = false);
+
+      if (filesOk) {
+        showNotice('✅ Data, foto & PDF berhasil disimpan ke database. ID: ' + id, 'ok');
+      } else {
+        showNotice('⚠️ Data checklist tersimpan (ID: ' + id + '), tapi foto/PDF gagal diunggah untuk alur review — coba submit ulang.', 'err');
       }
     }
 
@@ -366,13 +633,20 @@
     }
 
     function init() {
+      PhotoKit.configure({ maxWcm: 8.9, maxHcm: 10, defaultWcm: 8.9, defaultHcm: 6 }); // 2-up grid, portrait A4, margin 14mm
+      renderPhotos();
       loadDraft();
       bindInputAutosave();
+      const assetTag = (document.getElementById('asset-tag')?.value || 'FEEDER-VERIFICATION').trim();
       if (typeof LoadMergeModal !== 'undefined') {
-        LoadMergeModal.init({ assetTag: (document.getElementById('asset-tag')?.value || 'FEEDER-VERIFICATION').trim() });
+        LoadMergeModal.init({ assetTag });
+        LoadMergeModal.initRevisionBanner();
       }
       if (typeof TechnicianAuth !== 'undefined') {
         TechnicianAuth.init({ checkedByFieldId: 'checked-by' });
+      }
+      if (typeof SubmitGuard !== 'undefined') {
+        SubmitGuard.init({ assetTag });
       }
     }
 
