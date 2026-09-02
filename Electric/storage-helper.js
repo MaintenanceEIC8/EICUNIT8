@@ -10,7 +10,7 @@
 //
 //  PASTE YOUR DEPLOYED WEB APP URL HERE (ends in /exec):
 // ============================================================
-const DRIVE_PROXY_URL = 'PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
+const DRIVE_PROXY_URL = 'https://script.google.com/macros/s/AKfycbxDDZffhNAInCHnlcWAwYLmenVvmIQXqpIvdeS3nXiaE4QCTfzngsrFeulPfYPUA-c/exec';
 
 const Storage = {
   // path: a slash-separated virtual path, e.g.
