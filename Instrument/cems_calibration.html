@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CEMS Calibration — Unit 7</title>
+<title>CEMS Calibration — Unit 8</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -176,7 +176,7 @@
   <div class="topbar-sep"></div>
   <div class="topbar-logo">CEMS</div>
   <div class="topbar-sep"></div>
-  <div class="topbar-sub">PLTU Paiton Unit 7 &nbsp;·&nbsp; Continuous Emission Monitoring System Calibration</div>
+  <div class="topbar-sub">PLTU Paiton Unit 8 &nbsp;·&nbsp; Continuous Emission Monitoring System Calibration</div>
   <div class="topbar-right">
     <div class="live-dot"></div>
     <div class="topbar-time" id="clock">--:--:--</div>
@@ -188,7 +188,7 @@
   <div class="page-header">
     <div>
       <div class="page-header-sub">Data Calibration</div>
-      <div class="page-header-title">CEMS <span>Unit 7</span></div>
+      <div class="page-header-title">CEMS <span>Unit 8</span></div>
     </div>
     <div style="margin-bottom:8px">
       <span class="badge" id="freqBadge">FREQUENCY BELUM DIPILIH</span>
@@ -200,15 +200,15 @@
     <div class="section-label">Informasi Pekerjaan</div>
     <div class="info-grid">
       <div class="info-row"><label>Workorder</label><input type="text" id="metaWorkorder" placeholder="No. Workorder..."></div>
-      <div class="info-row"><label>Asset</label><input type="text" id="metaAsset" placeholder="Kode Asset..." value="7BGCEMAI107"></div>
-      <div class="info-row"><label>Desc Asset</label><input type="text" id="metaDescAsset" placeholder="Deskripsi Asset..." value="CEMS Analyzer Unit 7"></div>
+      <div class="info-row"><label>Asset</label><input type="text" id="metaAsset" placeholder="Kode Asset..." value="8BGCEMAI107"></div>
+      <div class="info-row"><label>Desc Asset</label><input type="text" id="metaDescAsset" placeholder="Deskripsi Asset..." value="CEMS Analyzer unit 8"></div>
       <div class="info-row"><label>PIC</label><input type="text" id="metaPic" placeholder="Nama PIC..."></div>
       <div class="info-row"><label>Tanggal</label><input type="date" id="metaTanggal"></div>
       <div class="info-row"><label>Frequency</label><input type="text" id="metaFrequency" placeholder="— pilih di Step 1 —" readonly></div>
       <div class="info-row"><label>Checked By - Technician</label>
         <select id="metaCheckedBy">
-          <option value="Zaini Nur Hidayat">Zaini Nur Hidayat</option>
-          <option value="Isyana Ray Sasongko">Isyana Ray Sasongko</option>
+          <option value="Muhammad Zainur Rofit">Muhammad Zainur Rofit</option>
+          <option value="Imam Faruq">Imam Faruq</option>
         </select>
       </div>
     </div>
@@ -1752,8 +1752,8 @@ buildCalTable('tblSpan2', 'hdr-span2', SPAN2_ROWS, 'sp2');
    ══════════════════════════════════════════════════════════════ */
 function getInspectionPlan(freq){
   var ITM = {
-    i1a: {id:'insp1_a', text:'Following 2 Weekly - Unit 7 CEMS Inspection & Maintenance'},
-    i1b: {id:'insp1_b', text:'Perform Purging Flow stack gas - elv 110 chimney U78 and Last reading (7BGCEMAI107)'},
+    i1a: {id:'insp1_a', text:'Following 2 Weekly - unit 8 CEMS Inspection & Maintenance'},
+    i1b: {id:'insp1_b', text:'Perform Purging Flow stack gas - elv 110 chimney U78 and Last reading (8BGCEMAI107)'},
     i1c: {id:'insp1_c', text:'Perform Purging-cleaning sample probe - elv 110 chimney U7'},
     i1d: {id:'insp1_d', text:'Perform Purging-cleaning alumunium filter probe - elv 110 chimney U78'},
     i3b: {id:'insp3_b', text:'Analyzer MKS 2000 maintenance (cleaning and cell inspection)'},
@@ -2277,7 +2277,7 @@ function dbCollectData(modul){
     tanggal: full.meta.tanggal || null,
     pic: full.meta.pic || null,
     work_order: full.meta.workorder || null,
-    unit: 'Unit 7',
+    unit: 'unit 8',
     data: full
   };
 }
@@ -2372,7 +2372,7 @@ function exportPdf(){
 
     // ── JUDUL ──
     doc.setFont('helvetica','bold'); doc.setFontSize(15); doc.setTextColor(20,30,25);
-    doc.text('CEMS DATA CALIBRATION — UNIT 7', marginX, y); y += 8;
+    doc.text('CEMS DATA CALIBRATION — unit 8', marginX, y); y += 8;
 
     // ── INFO PEKERJAAN (Fitur L: grid full-width label|value) ──
     var padIn = 3, labelColW = 40;
